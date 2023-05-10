@@ -1,0 +1,133 @@
+import java.io._
+import java.io.BufferedReader
+import java.io.FileReader
+import java.io.File
+import scala.io.Source
+object Main {
+  def main(args: Array[String]): Unit = {
+//step 3
+    val solarFile = "Solar energy.csv"
+    val windFile = "Wind energy.csv"
+    val hydroFile = "Hydro energy.csv"
+
+    val powerPlant = new PowerPlant(solarFile, windFile, hydroFile)
+
+    powerPlant.showEnergyData()
+//
+    val fileName = "Solar energy.csv"
+    val file = new File(fileName)
+    val writer = new BufferedWriter(new FileWriter(file))
+
+    writer.write("Hourly,Daily,Weekly,Monthly\n")
+    writer.write("2.5,60,420,1800\n")
+    writer.write("1.6,38.4,268.8,1152\n")
+    writer.write("1.9,45.6,319.2,1368\n")
+    writer.write("2.2,52.8,369,1584\n")
+    writer.write("1.7,40.8,285,1223\n")
+    writer.write("1.3,31.2,218.4,936\n")
+    writer.write("1.8,43.2,302,1296\n")
+    writer.write("1.4,33.6,235,1008\n")
+    writer.write("2.0,48,336,1440\n")
+    writer.write("1.5,36,252,1080\n")
+
+    writer.close()
+
+    val fl = "Wind energy.csv"
+    val fi = new File(fl)
+    val bw = new BufferedWriter(new FileWriter(fi))
+    bw.write("Hourly,Daily,Weekly,Monthly\n")
+    bw.write("2.2,52.8,369.6,1584\n")
+    bw.write("1.9,45.6,319.2,1368\n")
+    bw.write("1.4,33.6,235.2,1008\n")
+    bw.write("1.2,28.8,201.6,864\n")
+    bw.write("1.5,36,252,1080\n")
+    bw.write("2.3,55.2,386.4,1656\n")
+    bw.write("1.6,38.4,268.8,1152\n")
+    bw.write("1.8,43.2,302.4,1296\n")
+    bw.write("1.3,31.2,218.5,936\n")
+    bw.close()
+
+    val fn = "Hydro energy.csv"
+    val f = new File(fn)
+    val bb = new BufferedWriter(new FileWriter(f))
+    bb.write("Hourly,Daily,Weekly,Monthly\n")
+    bb.write("2.2,52.8,369.6,1584\n")
+    bb.write("1.9,45.6,319.2,1368\n")
+    bb.write("1.4,33.6,235.2,1008\n")
+    bb.write("1.2,28.8,201.6,864\n")
+    bb.write("1.5,36,252,1080\n")
+    bb.write("2.3,55.2,386.4,1656\n")
+    bb.write("1.6,38.4,268.8,1152\n")
+    bb.write("1.8,43.2,302.4,1296\n")
+    bb.write("1.3,31.2,218.5,936\n")
+    bb.close()
+    val solarData = readData("Solar energy.csv")
+    val windData = readData("Wind energy.csv")
+    val hydroData = readData("Hydro energy.csv")
+
+    displayTable("Solar Energy", solarData)
+    displayTable("Wind Energy", windData)
+    displayTable("Hydro Energy", hydroData)
+    // 从操作员输入获取命令
+    var command = ""
+    while (command != "exit") {
+      println("请输入一个命令（例如 'increase solar 10'）或输入 'exit' 以退出程序。")
+      val input = scala.io.StdIn.readLine()
+      val tokens = input.split(" ")
+      if (tokens.length != 3) {
+        println("无效的命令。请输入一个命令（例如 'increase solar 10'）或输入 'exit' 以退出程序。")
+      } else {
+        val powerSource = tokens(1)
+        val amount = tokens(2).toDouble
+        if (powerSource == "solar") {
+          powerPlant.increaseSolarOutput(amount)
+        } else if (powerSource == "wind") {
+          powerPlant.increaseWindOutput(amount)
+        } else if (powerSource == "hydro") {
+          powerPlant.increaseHydroOutput(amount)
+        } else {
+          println("无效的命令。请输入一个命令（例如 'increase solar 10'）或输入 'exit' 以退出程序。")
+        }
+      }
+    }
+
+    // Allow operator to adjust power plant operations
+    // TODO: implement this functionality
+  }
+
+  def readData(fileName: String): List[List[Double]] = {
+    val source = Source.fromFile(fileName)
+    val lines = source.getLines().toList
+    source.close()
+
+    val data = for {
+      line <- lines.tail // Skip first line
+      values = line.split(",").map(_.toDouble).toList
+    } yield values
+
+    data
+  }
+
+  def displayTable(title: String, data: List[List[Double]]): Unit = {
+    println(s"\n$title")
+    println("Hourly\tDaily\tWeekly\tMonthly")
+    for (row <- data) {
+      println(row.mkString("\t"))
+    }
+  }
+
+  val energyData = new EnergyData("Solar energy.csv", "Wind energy.csv", "Hydro energy.csv")
+  // 调用 EnergyData 类的方法进行数据处理
+  val hourlySolarData = energyData.filterData(energyData.solarData, "hourly")
+  val sortedSolarData = energyData.sortData(hourlySolarData)
+  val solarMean = energyData.calculateMean(hourlySolarData)
+  val solarMedian = energyData.calculateMedian(hourlySolarData)
+  val solarMode = energyData.calculateMode(hourlySolarData)
+  val solarRange = energyData.calculateRange(hourlySolarData)
+  val solarMidrange = energyData.calculateMidrange(hourlySolarData)
+  val searchDataResult = energyData.searchData(hourlySolarData, 10.0)
+  println(searchDataResult)
+  println(hourlySolarData)
+
+
+}

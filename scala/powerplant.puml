@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/object-diagram
+
+object EnergyMonitor
+object Energydata
+object step2
+object NewYork
+
+map CapitalCity {
+ UK *-> London
+ USA *--> Washington
+ Germany *---> Berlin
+}
+
+NewYork --> CapitalCity::USA
+@enduml
